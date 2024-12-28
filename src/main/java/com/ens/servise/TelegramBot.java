@@ -81,12 +81,12 @@ public class TelegramBot extends TelegramLongPollingBot {
                         startCommandReceived(chatId, update.getMessage().getChat().getFirstName(), state);
                         userStates.put(chatId, BotState.GET_YEAR);
                     } else {
-                        sendMessage(chatId, "Unrecognized command", state);
+                        sendMessage(chatId, "Unrecognized command");
                     }
                     break;
 
                 case WAITING_FOR_RESPONSE:
-                    sendMessage(chatId, "Choose command", state);
+                    sendMessage(chatId, "Choose command");
                     break;
 
                 case GET_YEAR:
@@ -109,7 +109,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     break;
 
                 default:
-                    sendMessage(chatId, "Sorry, command not found", state);
+                    sendMessage(chatId, "Sorry, command not found");
             }
         }
 
@@ -120,52 +120,52 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         log.info("Received command: {}", name);
 
-        sendMessage(chatId, answer, state);
+        sendMessage(chatId, answer);
     }
 
     private void yearCommandReceived(long chatId, String message, BotState state) {
         if (checkYearMessage(message)) {
-            sendMessage(chatId, "Good, now enter the month", state);
+            sendMessage(chatId, "Good, now enter the month", createKeyboardMonth());
             userStates.put(chatId, BotState.GET_MONTH);
         } else {
-            sendMessage(chatId, "The year is incorrect, please try again", state);
+            sendMessage(chatId, "The year is incorrect, please try again");
         }
     }
 
     private void monthCommandReceived(long chatId, String message, BotState state) {
         if (checkMonthMessage(message)) {
-            sendMessage(chatId, "Good, and lastly, enter the day", state);
+            sendMessage(chatId, "Good, and lastly, enter the day");
             userStates.put(chatId, BotState.GET_DAY);
         } else {
-            sendMessage(chatId, "The month is incorrect, please try again", state);
+            sendMessage(chatId, "The month is incorrect, please try again");
         }
     }
 
     private void dayCommandReceived(long chatId, String message, BotState state) {
         if (checkDayMessage(message)) {
-            sendMessage(chatId, "Thank you! The process is completed.", state);
+            sendMessage(chatId, "Thank you! The process is completed.");
             userStates.put(chatId, BotState.COMPLETED);
         } else {
-            sendMessage(chatId, "The day is incorrect, try again", state);
+            sendMessage(chatId, "The day is incorrect, try again");
         }
     }
 
     private void helpCommandReceived(long chatId, BotState state) {
-        sendMessage(chatId, HELP_TEXT, state);
+        sendMessage(chatId, HELP_TEXT);
     }
 
-//    private void sendMessage(long chatId, String message) {
-//        sendMessage(chatId, message, null);
-//
-//    }
+    private void sendMessage(long chatId, String message) {
+        sendMessage(chatId, message, null);
 
-    private void sendMessage(long chatId, String message, BotState state) {
+    }
+
+    private void sendMessage(long chatId, String message, ReplyKeyboardMarkup replyKeyboardMarkup) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(message);
 
-        if (state.equals(BotState.GET_YEAR)) {
-            sendMessage.setReplyMarkup(createKeyboardMonth());
+        if (replyKeyboardMarkup != null) {
+            sendMessage.setReplyMarkup(replyKeyboardMarkup);
         }
 
         try {
@@ -175,23 +175,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
 
     }
-
-//    private void sendMessage(long chatId, String message, ReplyKeyboardMarkup replyKeyboardMarkup) {
-//        SendMessage sendMessage = new SendMessage();
-//        sendMessage.setChatId(String.valueOf(chatId));
-//        sendMessage.setText(message);
-//
-//        if (replyKeyboardMarkup != null) {
-//            sendMessage.setReplyMarkup(replyKeyboardMarkup);
-//        }
-//
-//        try {
-//            execute(sendMessage);
-//        } catch (TelegramApiException e) {
-//            log.error("Error while sending message: {}", e.getMessage());
-//        }
-//
-//    }
 
     private boolean checkYearMessage(String message) {
         int year = Integer.parseInt(message);
