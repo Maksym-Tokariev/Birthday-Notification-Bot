@@ -8,11 +8,10 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity(name = "usersData")
-//@AllArgsConstructor
-//@NoArgsConstructor
-//@Getter
-//@Setter
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class User {
 
     @Id
