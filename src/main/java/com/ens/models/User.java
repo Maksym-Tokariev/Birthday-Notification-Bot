@@ -23,6 +23,8 @@ public class User {
 
     private String userName;
 
+    private String photoUrl;
+
     private Date dateOfBirth;
 
     private Timestamp registeredAt;

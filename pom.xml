@@ -30,6 +30,8 @@
         <java.version>21</java.version>
         <telegram.version>5.6.0</telegram.version>
         <lombok.version>1.18.36</lombok.version>
+        <mokito.version>3.3.3</mokito.version>
+        <jupiter.version>5.7.0</jupiter.version>
     </properties>
     <dependencies>
         <dependency>
@@ -68,13 +70,33 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mokito.version}</version>
+            <scope>test</scope> </dependency>
     </dependencies>
+
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${jupiter.version}</version>
+        <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>3.6.28</version>
+        <scope>test</scope>
+    </dependency>
+
 
     <build>
         <plugins>

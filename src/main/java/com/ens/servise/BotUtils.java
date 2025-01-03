@@ -1,19 +1,22 @@
 package com.ens.servise;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class BotUtils {
+
     public Date stringToDate(String date) {
 
         if (date == null || date.isEmpty()) {
@@ -88,5 +91,49 @@ public class BotUtils {
             }
         }
         return month;
+    }
+
+    public ReplyKeyboardMarkup createKeyboardMonth() {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+
+        List<KeyboardRow> rows = new ArrayList<>();
+        String[] months = {"January", "February", "March", "April", "May", "June", "July",
+                "August", "September", "October", "November", "December"};
+
+        KeyboardRow row = new KeyboardRow();
+
+        for (int i = 0; i < months.length; i++) {
+            row.add(months[i]);
+            if (i == 2 || i == 5 || i == 8) {
+                rows.add(row);
+                row = new KeyboardRow();
+            }
+        }
+
+        keyboardMarkup.setKeyboard(rows);
+
+        return keyboardMarkup;
+    }
+
+    public ReplyKeyboardMarkup createOptionsKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+
+        List<KeyboardRow> rows = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+
+        row.add("My birthday");
+        rows.add(row);
+        row = new KeyboardRow();
+        row.add("Add personal reminders");
+        rows.add(row);
+        row = new KeyboardRow();
+        row.add("Delete personal reminders");
+        rows.add(row);
+        row = new KeyboardRow();
+        row.add("Delete my data");
+
+        keyboardMarkup.setKeyboard(rows);
+
+        return keyboardMarkup;
     }
 }
