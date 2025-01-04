@@ -1,5 +1,6 @@
 package com.ens.servise;
 
+import com.ens.models.UserData;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -62,7 +64,7 @@ public class CommandHandler {
                 break;
 
             case WAITING_FOR_RESPONSE:
-                messageService.sendMessage(chatId, "Choose command");
+                handleWaitingForResponse(update);
                 break;
 
             case GET_YEAR:
@@ -86,15 +88,60 @@ public class CommandHandler {
 
             default:
                 messageService.sendMessage(chatId, "Sorry, command not found");
+                userStates.put(chatId, BotState.WAITING_FOR_RESPONSE);
         }
     }
 
+    private void handleWaitingForResponse(Update update) {
+
+        String message = update.getMessage().getText();
+        long chatId = update.getMessage().getChatId();
+
+        if (message.equals("/start")) {
+            handleStartCommand(chatId, message, update);
+        } else if (message.equals("/mydata")) {
+            handleMyDataCommand(chatId);
+        } else if (message.equals("/help")) {
+            helpCommandReceived(chatId);
+        } else if (message.equals("/deletedata")) {
+            handleDeleteDataCommand(chatId);
+        } else {
+            messageService.sendMessage(chatId, "Sorry, command not found *");
+            userStates.put(chatId, BotState.WAITING_FOR_RESPONSE);
+        }
+
+    }
+
+    private void handleDeleteDataCommand(long chatId) {
+        if (botService.userExists(chatId)) {
+            botService.deleteUser(chatId);
+            messageService.sendMessage(chatId, "You've successfully deleted birthday");
+            userStates.put(chatId, BotState.WAITING_FOR_RESPONSE);
+        } else {
+            messageService.sendMessage(chatId, "No data was found for deletion. Register using the command /start");
+        }
+    }
+
+    private void handleMyDataCommand(long chatId) {
+        Optional<UserData> optionalUserData = botService.getDateOfBirth(chatId);
+
+        if (optionalUserData.isPresent()) {
+            UserData userData = optionalUserData.get();
+            messageService.sendMessage(chatId, userData.getFirstName() + ", your birthday is" + userData.getDateOfBirth());
+        } else {
+            messageService.sendMessage(chatId, "No date of birth was found for your account. " +
+                    "You may not have entered it. Use the command /start");
+        }
+
+        userStates.put(chatId, BotState.WAITING_FOR_RESPONSE);
+    }
+
     private void handleStartCommand(long chatId, String message, Update update) {
-        if ("/start".equals(message)) {
+        if ("/start".equals(message) && !botService.userExists(chatId)) {
             startCommandReceived(chatId, update.getMessage().getChat().getFirstName());
             userStates.put(chatId, BotState.GET_YEAR);
         } else {
-            messageService.sendMessage(chatId, "Unrecognized command");
+            messageService.sendMessage(chatId, "Command /start not supported. You may have already entered your birthday");
         }
     }
 
@@ -148,7 +195,7 @@ public class CommandHandler {
     private void dayCommandReceived(long chatId, String message, Update update) {
         if (utils.checkDayMessage(message)) {
             messageService.sendMessage(chatId, "Thank you! The process is completed.");
-            userStates.put(chatId, BotState.COMPLETED);
+            userStates.put(chatId, BotState.WAITING_FOR_RESPONSE);
 
             date[2] = message;
 

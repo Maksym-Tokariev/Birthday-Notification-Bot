@@ -1,6 +1,7 @@
 package com.ens.servise;
 
 import com.ens.models.User;
+import com.ens.models.UserData;
 import com.ens.models.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -40,5 +42,28 @@ public class BotService {
 
             log.info("user saved: {}", user);
         }
+    }
+
+    public boolean userExists(long chatId) {
+        log.info("Entering userExists method for chatId: {}", chatId);
+
+        return repository.findById(chatId).isPresent();
+    }
+
+    public Optional<UserData> getDateOfBirth(long chatId) {
+        return repository.findById(chatId).map(user -> {
+            UserData userData = new UserData();
+            userData.setDateOfBirth(String.valueOf(user.getDateOfBirth()));
+            userData.setFirstName(user.getFirstName());
+
+            log.info("user found in getDateOfBirth: {}", userData);
+            return userData;
+        });
+    }
+
+    public void deleteUser(long chatId) {
+        repository.deleteById(chatId);
+
+        log.info("user deleted: {}", chatId);
     }
 }
