@@ -1,7 +1,7 @@
 package com.ens;
 
 import com.ens.config.BotConfig;
-import com.ens.servise.BotService;
+//import com.ens.servise.BotService;
 import com.ens.servise.BotUtils;
 import com.ens.servise.TelegramBot;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,8 +25,8 @@ class EnsApplicationTests {
     @Mock
     private BotConfig config;
 
-    @Mock
-    private BotService service;
+//    @Mock
+//    private BotService service;
 
     @InjectMocks
     private TelegramBot bot;

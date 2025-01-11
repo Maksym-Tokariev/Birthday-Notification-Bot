@@ -61,7 +61,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         listOfCommands.add(new BotCommand("/deletedata", "Delete my data"));
         listOfCommands.add(new BotCommand("/help", "Show this help"));
         listOfCommands.add(new BotCommand("/settings", "Set your settings"));
-
+        listOfCommands.add(new BotCommand("/mygroups", "Shows a list of the groups you are a member of "));
+        listOfCommands.add(new BotCommand("/removeme from the group", "Removes you from the selected group"));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
