@@ -14,12 +14,16 @@ public class CommandHandlerConfig {
     public Map<String, CommandHandler> commandHandlers(StartCommandHandler startCommandHandler,
                                                        HelpCommandHandler helpCommandHandler,
                                                        MyDataCommandHandler myDataCommandHandler,
-                                                       DeleteDataCommandHandler deleteDataCommandHandler) {
+                                                       DeleteDataCommandHandler deleteDataCommandHandler,
+                                                       ListOfMyGroupsCommandHandler list,
+                                                       RemoveGroupCommandHandler removeGroupCommandHandler) {
         Map<String, CommandHandler> commandHandlers = new HashMap<>();
         commandHandlers.put("/start", startCommandHandler);
         commandHandlers.put("/help", helpCommandHandler);
         commandHandlers.put("/mydata", myDataCommandHandler);
         commandHandlers.put("/deletedata", deleteDataCommandHandler);
+        commandHandlers.put("/mygroups", list);
+        commandHandlers.put("/removegroup", removeGroupCommandHandler);
         return commandHandlers;
     }
 

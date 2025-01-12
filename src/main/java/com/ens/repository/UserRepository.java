@@ -25,6 +25,8 @@ public class UserRepository {
 
     @Transactional
     public void save(Users users) {
+        log.info("Method save called in UserRepository with user: {}", users);
+
         String sql = "INSERT INTO users_data (chat_Id, first_name, last_name, user_name, date_of_birth, registered_at)"
                 + " VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -44,13 +46,15 @@ public class UserRepository {
     }
 
     public Optional<Users> findById(Long chatId) {
+        log.info("Method findById called in UserRepository with chatId: {}", chatId);
+
         String sql = "SELECT * FROM users_data WHERE chat_Id = ?";
 
         try {
             Users users = jdbcTemplate.queryForObject(sql, new Object[]{chatId}, new UserRowMapper());
             return Optional.of(users);
         } catch (EmptyResultDataAccessException e) {
-            log.error("Error when searching for user by id: {}", e.getMessage());
+            log.debug("Empty result when searching by chatId: {}", e.getMessage());
             return Optional.empty();
         } catch (DataAccessException e) {
             log.error("Error finding user by id: {}",e.getMessage());
@@ -59,19 +63,25 @@ public class UserRepository {
     }
 
     public List<Users> findAll() {
+        log.info("Method findAll called in UserRepository");
+
         String sql = "SELECT * FROM users_data";
 
         log.info("SQL query: {}", sql);
         try {
             return jdbcTemplate.query(sql, new UserRowMapper());
         } catch (EmptyResultDataAccessException e) {
-            log.error("Error when searching for users: {}", e.getMessage(), e);
+            log.debug("Empty result when searching by users: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Error finding users: {}", e.getMessage());
             throw e;
         }
-
     }
 
-    public void deleteUser(long chatId) {
+    public void deleteUser(Long chatId) {
+        log.info("Method deleteUser called in UserRepository with chatId: {}", chatId);
+
         String sql = "DELETE FROM users_data WHERE chat_Id = ?";
         try {
             jdbcTemplate.update(sql, chatId);

@@ -53,6 +53,7 @@ public class MainCommandHandler {
 
         BotState state = userStateHandler.getState(chatId);
 
+        log.info("Method handleTextMessage, state: {}, message: {}", state, message);
         CommandHandler handler = commandHandlers.get(message);
 
         if (handler != null) {
@@ -61,6 +62,7 @@ public class MainCommandHandler {
             switch (state) {
 
                 case WAITING_FOR_RESPONSE:
+                    log.info("handleTextMessage, waiting for response {}, {}", message, state);
                     handleWaitingForResponse(chatId, message, update);
                     break;
 
@@ -86,6 +88,7 @@ public class MainCommandHandler {
     private void handleWaitingForResponse(Long chatId, String message, Update update) {
         String[] parts = message.split(" ");
 
+        log.info("handleWaitingForResponse, chatId: {}, message: {}", chatId, message);
         switch (parts[0]) {
             case "/start":
                 CommandHandler startHandler = commandHandlers.get("/start");
@@ -114,10 +117,6 @@ public class MainCommandHandler {
             default:
                 messageService.sendMessage(chatId, "Sorry, command not found");
         }
-    }
-
-    private void listOfMyGroups(Long chatId) {
-        // TODO
     }
 
     private void yearCommandReceived(Long chatId, String message) {

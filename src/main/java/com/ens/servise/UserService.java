@@ -2,6 +2,7 @@ package com.ens.servise;
 
 import com.ens.models.Group;
 import com.ens.models.UserData;
+import com.ens.models.UserGroups;
 import com.ens.models.Users;
 import com.ens.repository.GroupRepository;
 import com.ens.repository.UserGroupRepository;
@@ -13,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -28,6 +29,8 @@ public class UserService {
 
     @Transactional
     public void registerUser(Message message, Long groupId, Date dateOfBirth, String groupName) {
+        log.info("Method registerUser called in UserService with groupId: {} and message: {}", groupId, message);
+
         var chatId = message.getChatId();
         var chat = message.getChat();
 
@@ -50,6 +53,8 @@ public class UserService {
             return newUser;
         });
 
+        log.info("User {} with chatId: {}", users, chatId);
+
         if (optionalGroup.isEmpty()) {
             registerGroup(groupId, groupName);
             log.info("Group registered: {}", groupName);
@@ -60,12 +65,15 @@ public class UserService {
             log.info("Saved user in users_groups: {} with group: {}", users.getChatId(), groupId);
         }
 
+        log.info("Method registerUser was performed in UserService with groupId: {} and chatId: {}", groupId, chatId);
+
         userWasRegistered(groupId, users);
 
     }
 
     @Transactional
     public void registerGroup(Long groupId, String groupName) {
+        log.info("Method registerGroup called in UserService with groupId: {}", groupId);
         Group newGroup = new Group();
 
         newGroup.setGroupId(groupId);
@@ -77,7 +85,7 @@ public class UserService {
     }
 
     public boolean userExists(Long chatId) {
-        log.info("userExists chatId: {}", chatId);
+        log.info("Method userExists called in UserService with chatId: {}", chatId);
         try {
             return userRepository.findById(chatId).isPresent();
         } catch (Exception e) {
@@ -87,6 +95,7 @@ public class UserService {
     }
 
     public boolean groupExists(Long groupId) {
+        log.info("Method groupExists called in UserService with groupId: {}", groupId);
         try {
             return groupRepository.findById(groupId).isPresent();
         } catch (Exception e) {
@@ -101,6 +110,8 @@ public class UserService {
     }
 
     public Optional<UserData> getDateOfBirth(Long chatId) {
+        log.info("Method getDateOfBirth called in UserService with chatId: {}", chatId);
+
         return userRepository.findById(chatId).map(users -> {
             UserData userData = new UserData();
             userData.setDateOfBirth(String.valueOf(users.getDateOfBirth()));
@@ -112,8 +123,29 @@ public class UserService {
         });
     }
 
+    public List<UserGroups> listOfGroups(Long chatId) {
+        log.info("Method listOfGroups called in UserService with chatId: {}", chatId);
+
+        List<UserGroups> groupsList = groupUserGroupRepository.findGroupByChatId(chatId);
+
+        for (UserGroups userGroups : groupsList) {
+            if (userGroups.getGroupName() == null) {
+                log.warn("One of the groups is null: {}", userGroups);
+                break;
+            }
+        }
+
+        if (groupsList.isEmpty()) {
+            log.info("No groups found for chatId: {}", chatId);
+        } else {
+            log.info("Found {} groups", groupsList.size());
+        }
+
+        return groupsList;
+    }
+
     private void userWasRegistered(Long groupId, Users users) {
-        String groupMessage = "@" + users.getUserName() + " has registered their birthday fo this group.";
+        String groupMessage = "@" + users.getUserName() + " has registered their birthday for this group.";
         messageService.sendMessage(groupId, groupMessage);
     }
 }
