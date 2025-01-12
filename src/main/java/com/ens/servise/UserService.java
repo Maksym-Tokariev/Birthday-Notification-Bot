@@ -2,7 +2,6 @@ package com.ens.servise;
 
 import com.ens.models.Group;
 import com.ens.models.UserData;
-import com.ens.models.UserGroup;
 import com.ens.models.Users;
 import com.ens.repository.GroupRepository;
 import com.ens.repository.UserGroupRepository;
@@ -77,20 +76,6 @@ public class UserService {
         log.info("Group has been registered: {}", newGroup);
     }
 
-    @Transactional
-    public void addToGroup(Long chatId, Long groupId) {
-        Optional<UserGroup> optionalUserGroup = groupUserGroupRepository.findUserAndGroup(chatId, groupId);
-        if (optionalUserGroup.isPresent()) {
-            messageService.sendMessage(chatId, "You are already registered with this group");
-        } else {
-            try {
-                groupRepository.saveUserGroup(chatId, groupId);
-            } catch (Exception e) {
-                log.error("Group add error {}",e.getMessage());
-            }
-        }
-    }
-
     public boolean userExists(Long chatId) {
         log.info("userExists chatId: {}", chatId);
         try {
@@ -128,7 +113,7 @@ public class UserService {
     }
 
     private void userWasRegistered(Long groupId, Users users) {
-        String groupMessage = "@"+users.getUserName() + " has registered their birthday fo this group.";
+        String groupMessage = "@" + users.getUserName() + " has registered their birthday fo this group.";
         messageService.sendMessage(groupId, groupMessage);
     }
 }

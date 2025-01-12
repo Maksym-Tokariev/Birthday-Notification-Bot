@@ -22,14 +22,14 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private MessageService messageService;
 
-    private final CommandHandler commandHandler;
+    private final MainCommandHandler mainCommandHandler;
 
     private final BotConfig config;
 
     @Autowired
-    public TelegramBot(BotConfig config, CommandHandler commandHandler) {
+    public TelegramBot(BotConfig config, MainCommandHandler mainCommandHandler) {
         this.config = config;
-        this.commandHandler = commandHandler;
+        this.mainCommandHandler = mainCommandHandler;
         initializeBotCommands();
     }
 
@@ -51,7 +51,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        commandHandler.handleUpdate(update);
+        mainCommandHandler.handleUpdate(update);
     }
 
     private void initializeBotCommands() {
