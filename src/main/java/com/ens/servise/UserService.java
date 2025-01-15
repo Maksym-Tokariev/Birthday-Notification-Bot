@@ -15,7 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -24,7 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
-    private final UserGroupRepository groupUserGroupRepository;
+    private final UserGroupRepository groupUserRepository;
     private final MessageService messageService;
 
     @Transactional
@@ -60,7 +59,7 @@ public class UserService {
             log.info("Group registered: {}", groupName);
         }
 
-        if (groupUserGroupRepository.findUserAndGroup(chatId, groupId).isEmpty()) {
+        if (groupUserRepository.findUserAndGroup(chatId, groupId).isEmpty()) {
             groupRepository.saveUserGroup(users.getChatId(), groupId);
             log.info("Saved user in users_groups: {} with group: {}", users.getChatId(), groupId);
         }
@@ -105,7 +104,7 @@ public class UserService {
     }
 
     public void deleteUser(Long chatId) {
-        groupUserGroupRepository.deleteUserAndGroup(chatId);
+        groupUserRepository.deleteUserAndGroup(chatId);
         userRepository.deleteUser(chatId);
     }
 
@@ -126,7 +125,7 @@ public class UserService {
     public List<UserGroups> listOfGroups(Long chatId) {
         log.info("Method listOfGroups called in UserService with chatId: {}", chatId);
 
-        List<UserGroups> groupsList = groupUserGroupRepository.findGroupByChatId(chatId);
+        List<UserGroups> groupsList = groupUserRepository.findGroupByChatId(chatId);
 
         for (UserGroups userGroups : groupsList) {
             if (userGroups.getGroupName() == null) {
@@ -147,5 +146,9 @@ public class UserService {
     private void userWasRegistered(Long groupId, Users users) {
         String groupMessage = "@" + users.getUserName() + " has registered their birthday for this group.";
         messageService.sendMessage(groupId, groupMessage);
+    }
+
+    public void deleteUserGroup(String groupName, Long chatId) {
+        groupUserRepository.deleteGroup(groupName, chatId);
     }
 }

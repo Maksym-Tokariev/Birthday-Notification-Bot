@@ -1,9 +1,12 @@
 package com.ens.servise;
 
+import com.ens.models.UserGroups;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.text.ParseException;
@@ -135,5 +138,30 @@ public class BotUtils {
         keyboardMarkup.setKeyboard(rows);
 
         return keyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup createKeyboardCommand(List<UserGroups> groupsList) {
+
+        List<String> groupNames = new ArrayList<>();
+
+        for (UserGroups group : groupsList) {
+            groupNames.add(group.getGroupName());
+        }
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        List<InlineKeyboardButton> rows = new ArrayList<>();
+
+        for (String groupName : groupNames) {
+            var button = new InlineKeyboardButton();
+
+            button.setText(groupName);
+            button.setCallbackData(groupName);
+            rows.add(button);
+        }
+        keyboard.add(rows);
+        inlineKeyboardMarkup.setKeyboard(keyboard);
+        return inlineKeyboardMarkup;
     }
 }

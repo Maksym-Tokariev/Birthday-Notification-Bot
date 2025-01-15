@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -75,6 +74,20 @@ public class UserGroupRepository {
             log.info("Deleted user {} and group", chatId);
         } catch (Exception e) {
             log.error("Error in deleteUserAndGroup: {}", e.getMessage());
+        }
+    }
+
+    public void deleteGroup(String groupName, Long chatId) {
+        log.info("Method deleteGroup called in UserGroupRepository with chatId: {}, and group: {} ", chatId, groupName);
+
+        String sql = "DELETE FROM user_groups WHERE chat_id=? AND group_id IN (" +
+                "SELECT group_id FROM groups WHERE name=?)";
+
+        try {
+            jdbcTemplate.update(sql, chatId, groupName);
+            log.info("Deleted group {}, for user {}", groupName, chatId);
+        } catch (Exception e) {
+            log.error("Error in deleteGroup: {}", e.getMessage());
         }
     }
 

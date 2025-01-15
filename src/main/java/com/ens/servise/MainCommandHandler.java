@@ -29,7 +29,21 @@ public class MainCommandHandler {
             handleTextMessage(update);
         } else if (update.hasMyChatMember()) {
             handleChatMessageUpdate(update);
+        } else if (update.hasCallbackQuery()) {
+            handleQuery(update);
         }
+    }
+
+    private void handleQuery(Update update) {
+        String callbackQuery = update.getCallbackQuery().getData();
+        long messageId = update.getCallbackQuery().getMessage().getMessageId();
+        long chatId = update.getCallbackQuery().getMessage().getChatId();
+
+        log.info("Received query: {}, messageId: {}, chatId: {}", callbackQuery, messageId, chatId);
+
+        userService.deleteUserGroup(callbackQuery,chatId);
+        messageService.sendMessage(chatId, "You have been successfully removed from the group " + callbackQuery +
+                ". Your birthday messages will no longer be sent to this group");
     }
 
     private void handleChatMessageUpdate(Update update) {
