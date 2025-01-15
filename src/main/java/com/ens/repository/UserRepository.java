@@ -1,6 +1,5 @@
 package com.ens.repository;
 
-import com.ens.models.Group;
 import com.ens.models.Users;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Collections;
 
 @Slf4j
 @Repository
@@ -58,6 +58,22 @@ public class UserRepository {
             return Optional.empty();
         } catch (DataAccessException e) {
             log.error("Error finding user by id: {}",e.getMessage());
+            throw e;
+        }
+    }
+
+    public List<Long> findUsersByGroupId(Long groupId) {
+        log.info("Method findUsersByGroupId called in UserRepository with groupId: {}", groupId);
+
+        String sql = "SELECT chat_id FROM user_groups WHERE group_id = ?";
+
+        try {
+            return jdbcTemplate.query(sql, new Object[]{groupId}, (rs, rowNum) -> rs.getLong("chat_id"));
+        } catch (EmptyResultDataAccessException e) {
+            log.debug("Empty result when searching by groupId: {}", e.getMessage());
+            return Collections.emptyList();
+        } catch (DataAccessException e) {
+            log.error("Error finding user by groupId: {}",e.getMessage());
             throw e;
         }
     }

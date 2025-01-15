@@ -60,11 +60,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         listOfCommands.add(new BotCommand("/mydata", "Get info about yourself"));
         listOfCommands.add(new BotCommand("/deletedata", "Delete my data"));
         listOfCommands.add(new BotCommand("/help", "Show this help"));
-        listOfCommands.add(new BotCommand("/settings", "Set your settings"));
         listOfCommands.add(new BotCommand("/mygroups", "Shows a list of the groups you are a member of "));
         listOfCommands.add(new BotCommand("/removegroup", "Removes you from the selected group"));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
+            log.info("Bot commands initialized");
         } catch (TelegramApiException e) {
             log.error("Error with initializing bot commands: {}", e.getMessage(), e);
         }

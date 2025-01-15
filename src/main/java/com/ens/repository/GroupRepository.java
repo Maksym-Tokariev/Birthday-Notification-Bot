@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -53,23 +52,23 @@ public class GroupRepository {
 
     }
 
-    public Optional<List<Group>> findAll() {
-        log.info("Method findAll called in GroupRepository");
-
-        String sql = "SELECT * FROM groups";
-
-        try {
-            List<Group> group = jdbcTemplate.query(sql, new GroupRowMapper());
-            return Optional.of(group);
-        } catch (EmptyResultDataAccessException e) {
-            log.debug("Groups not found");
-            return Optional.empty();
-        } catch (Exception e) {
-            log.error("Error in finding groups: {}", e.getMessage());
-            throw e;
-        }
-
-    }
+//    public Optional<List<Group>> findAll() {
+//        log.info("Method findAll called in GroupRepository");
+//
+//        String sql = "SELECT * FROM groups";
+//
+//        try {
+//            List<Group> group = jdbcTemplate.query(sql, new GroupRowMapper());
+//            return Optional.ofNullable(group);
+//        } catch (EmptyResultDataAccessException e) {
+//            log.debug("Groups not found");
+//            return Optional.empty();
+//        } catch (Exception e) {
+//            log.error("Error in finding groups: {}", e.getMessage());
+//            throw e;
+//        }
+//
+//    }
 
     public void saveUserGroup(Long chatId, Long groupId) {
         log.info("Method save called in GroupRepository with chatId: {} and groupId: {}", chatId, groupId);
@@ -83,7 +82,6 @@ public class GroupRepository {
     }
 
     public static class GroupRowMapper implements RowMapper<Group> {
-
         @Override
         public Group mapRow(ResultSet rs, int rowNum) throws SQLException {
             Group group = new Group();

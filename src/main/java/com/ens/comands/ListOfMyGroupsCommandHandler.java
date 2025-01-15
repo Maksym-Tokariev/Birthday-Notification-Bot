@@ -23,17 +23,22 @@ public class ListOfMyGroupsCommandHandler implements CommandHandler {
 
     @Override
     public void handle(Update update) {
+        log.info("The command is processed in ListOfMyGroupsCommandHandler");
+
         Long chatId = update.getMessage().getChatId();
         List<UserGroups> listOfGroups = userService.listOfGroups(chatId);
 
-        if (!listOfGroups.isEmpty()) {
+        if (!listOfGroups.isEmpty() && userService.userExists(chatId)) {
             StringBuilder groupsMessage = new StringBuilder("Groups you are a member of:\n");
             for (UserGroups group : listOfGroups) {
                 groupsMessage.append("- ").append(group.getGroupName()).append("\n");
             }
             messageService.sendMessage(chatId, groupsMessage.toString());
+
+            log.info("The command executed with the list of groups: {}", listOfGroups);
         } else {
             messageService.sendMessage(chatId, "You are not a member of any group");
+            log.info("The command executed and returned a empty list of groups");
         }
         userStateHandler.setState(chatId, BotState.WAITING_FOR_RESPONSE);
     }

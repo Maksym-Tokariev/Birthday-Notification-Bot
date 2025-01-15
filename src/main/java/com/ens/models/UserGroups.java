@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class UserGroups {
     private String userName;
     private String groupName;
+    private Long groupId;
 }

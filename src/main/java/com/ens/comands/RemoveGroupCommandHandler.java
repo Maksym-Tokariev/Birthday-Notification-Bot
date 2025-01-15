@@ -9,9 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -25,12 +23,19 @@ public class RemoveGroupCommandHandler implements CommandHandler {
 
     @Override
     public void handle(Update update) {
+        log.info("The command is processed in RemoveGroupCommandHandler");
         Long chatId = update.getMessage().getChatId();
 
         List<UserGroups> groupsList = userService.listOfGroups(chatId);
 
-        InlineKeyboardMarkup groups = botUtils.createKeyboardCommand(groupsList);
+        if (!groupsList.isEmpty() && userService.userExists(chatId)) {
+            InlineKeyboardMarkup groups = botUtils.createKeyboardCommand(groupsList);
+            messageService.sendMessage(chatId, "Select the group you want to remove", groups);
 
-        messageService.sendMessage(chatId, "Select the group you want to remove", groups);
+            log.info("The command executed and deleted group");
+        } else {
+            messageService.sendMessage(chatId, "You do not have any groups to remove");
+        }
+
     }
 }

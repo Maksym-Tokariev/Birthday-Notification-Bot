@@ -58,6 +58,7 @@ public class MainCommandHandler {
                     "Please visit the bot privately to register: https://t.me/ENSystembot?start=" + encodedGroupId + "_" + encodedGroupName;
 
             messageService.sendMessage(groupId, answer);
+            log.info("The bot has been added to the group");
         }
     }
 

@@ -23,15 +23,19 @@ public class MyDataCommandHandler implements CommandHandler {
 
     @Override
     public void handle(Update update) {
+        log.info("The command is processed in MyDataCommandHandler");
+
         Long chatId = update.getMessage().getChatId();
         Optional<UserData> optionalUserData = userService.getDateOfBirth(chatId);
 
         if (optionalUserData.isPresent()) {
             UserData userData = optionalUserData.get();
             messageService.sendMessage(chatId, userData.getFirstName() + ", your birthday is " + userData.getDateOfBirth());
+            log.info("The command has been executed and the user {} data has been deleted", userData.getFirstName());
         } else {
             messageService.sendMessage(chatId, "No date of birth was found for your account. " +
                     "You may not have entered it.");
+            log.info("The command was not executed for the user because the user is not logged in");
         }
         userStateHandler.setState(chatId, BotState.WAITING_FOR_RESPONSE);
     }

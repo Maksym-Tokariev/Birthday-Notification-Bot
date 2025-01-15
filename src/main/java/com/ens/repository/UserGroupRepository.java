@@ -46,7 +46,7 @@ public class UserGroupRepository {
     public List<UserGroups> findGroupByChatId(Long chatId) {
         log.info("Method findGroupByChatId called in UserGroupRepository with chatId: {}", chatId);
 
-        String sql = "SELECT users_data.user_name, groups.name AS group_name\n" +
+        String sql = "SELECT users_data.user_name, groups.group_id, groups.name AS group_name\n" +
                 "FROM users_data\n" +
                 "INNER JOIN user_groups ON users_data.chat_id = user_groups.chat_id\n" +
                 "INNER JOIN  groups ON user_groups.group_id = groups.group_id\n" +
@@ -91,17 +91,33 @@ public class UserGroupRepository {
         }
     }
 
+    public List<UserGroups> findAll() {
+        log.info("Method findAll called in UserGroupRepository");
+        String sql = "SELECT * FROM user_groups";
+
+        try {
+            return jdbcTemplate.query(sql, new UserGroupsRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            log.debug("Empty result when searching all user groups");
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.error("Error in findAll: {}", e.getMessage());
+            throw e;
+        }
+    }
+
     public static class UserGroupsRowMapper implements RowMapper<UserGroups> {
 
         @Override
         public UserGroups mapRow(ResultSet rs, int rowNum) throws SQLException {
             String userName = rs.getString("user_name");
             String groupName = rs.getString("group_name");
+            Long groupId = rs.getLong("group_id");
             System.out.println("Fetched user_name: " + userName + ", group_name: " + groupName);
             if (userName == null || groupName == null) {
                 System.out.println("Warning: Null value found in ResultSet.");
             }
-            return new UserGroups(userName, groupName);
+            return new UserGroups(userName, groupName, groupId);
         }
     }
 }

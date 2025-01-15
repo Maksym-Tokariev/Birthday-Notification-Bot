@@ -77,7 +77,6 @@ public class UserService {
 
         newGroup.setGroupId(groupId);
         newGroup.setGroupName(groupName);
-//            newGroup.setUsers(userRepository.findAllWithGroupId(groupId)); TODO
 
         groupRepository.save(newGroup);
         log.info("Group has been registered: {}", newGroup);
@@ -89,16 +88,6 @@ public class UserService {
             return userRepository.findById(chatId).isPresent();
         } catch (Exception e) {
             log.error("userExists error: {}", e.getMessage(), e);
-            return false;
-        }
-    }
-
-    public boolean groupExists(Long groupId) {
-        log.info("Method groupExists called in UserService with groupId: {}", groupId);
-        try {
-            return groupRepository.findById(groupId).isPresent();
-        } catch (Exception e) {
-            log.error("groupExists error: {}", e.getMessage(), e);
             return false;
         }
     }
@@ -126,13 +115,6 @@ public class UserService {
         log.info("Method listOfGroups called in UserService with chatId: {}", chatId);
 
         List<UserGroups> groupsList = groupUserRepository.findGroupByChatId(chatId);
-
-        for (UserGroups userGroups : groupsList) {
-            if (userGroups.getGroupName() == null) {
-                log.warn("One of the groups is null: {}", userGroups);
-                break;
-            }
-        }
 
         if (groupsList.isEmpty()) {
             log.info("No groups found for chatId: {}", chatId);

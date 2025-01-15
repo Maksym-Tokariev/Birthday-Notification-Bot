@@ -20,12 +20,16 @@ public class DeleteDataCommandHandler implements CommandHandler {
 
     @Override
     public void handle(Update update) {
+        log.info("The command is processed in DeleteDataCommandHandler");
+
         Long chatId = update.getMessage().getChatId();
         if (userService.userExists(chatId)) {
             userService.deleteUser(chatId);
             messageService.sendMessage(chatId, "You've successfully deleted birthday");
+            log.info("The command executed and deleted user: {}", update.getMessage().getChat().getUserName());
         } else {
             messageService.sendMessage(chatId, "No data was found for deletion. Register using the command /start");
+            log.info("The command was not executed for the user because the user is not logged in");
         }
         userStateHandler.setState(chatId, BotState.WAITING_FOR_RESPONSE);
     }
