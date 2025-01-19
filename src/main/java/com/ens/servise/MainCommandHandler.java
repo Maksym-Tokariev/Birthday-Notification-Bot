@@ -74,7 +74,7 @@ public class MainCommandHandler {
         log.info("Method handleTextMessage, state: {}, message: {}", state, message);
         CommandHandler handler = commandHandlers.get(message);
 
-        if (handler != null) {
+            if (handler != null) {
             handler.handle(update);
         } else {
             switch (state) {
