@@ -1,11 +1,8 @@
-package com.ens.servise;
+package com.ens.utils;
 
 public enum BotState {
-    START,
-    HELP,
     WAITING_FOR_RESPONSE,
     GET_YEAR,
     GET_MONTH,
-    GET_DAY,
-    COMPLETED
+    GET_DAY
 }

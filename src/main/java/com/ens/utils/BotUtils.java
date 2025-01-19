@@ -1,4 +1,4 @@
-package com.ens.servise;
+package com.ens.utils;
 
 import com.ens.models.UserGroups;
 import lombok.AllArgsConstructor;
@@ -41,6 +41,9 @@ public class BotUtils {
 
     public boolean checkYearMessage(String message) {
         try {
+            if (message == null || message.isEmpty()) {
+                log.debug("Provided message is null or empty");
+            }
             int year = Integer.parseInt(message);
             int currYear = LocalDate.now().getYear();
 
@@ -118,28 +121,6 @@ public class BotUtils {
         return keyboardMarkup;
     }
 
-    public ReplyKeyboardMarkup createOptionsKeyboard() {
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-
-        List<KeyboardRow> rows = new ArrayList<>();
-        KeyboardRow row = new KeyboardRow();
-
-        row.add("My birthday");
-        rows.add(row);
-        row = new KeyboardRow();
-        row.add("Add personal reminders");
-        rows.add(row);
-        row = new KeyboardRow();
-        row.add("Delete personal reminders");
-        rows.add(row);
-        row = new KeyboardRow();
-        row.add("Delete my data");
-
-        keyboardMarkup.setKeyboard(rows);
-
-        return keyboardMarkup;
-    }
-
     public InlineKeyboardMarkup createKeyboardCommand(List<UserGroups> groupsList) {
 
         List<String> groupNames = new ArrayList<>();
@@ -151,16 +132,17 @@ public class BotUtils {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
-        List<InlineKeyboardButton> rows = new ArrayList<>();
-
         for (String groupName : groupNames) {
             var button = new InlineKeyboardButton();
 
             button.setText(groupName);
             button.setCallbackData(groupName);
+
+            List<InlineKeyboardButton> rows = new ArrayList<>();
             rows.add(button);
+            keyboard.add(rows);
         }
-        keyboard.add(rows);
+
         inlineKeyboardMarkup.setKeyboard(keyboard);
         return inlineKeyboardMarkup;
     }

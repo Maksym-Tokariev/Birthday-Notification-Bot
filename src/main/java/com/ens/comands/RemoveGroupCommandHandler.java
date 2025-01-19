@@ -1,9 +1,11 @@
 package com.ens.comands;
 
 import com.ens.models.UserGroups;
-import com.ens.servise.BotUtils;
+import com.ens.utils.BotState;
+import com.ens.utils.BotUtils;
 import com.ens.servise.MessageService;
 import com.ens.servise.UserService;
+import com.ens.utils.UserStateHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,7 @@ public class RemoveGroupCommandHandler implements CommandHandler {
     private final UserService userService;
     private final MessageService messageService;
     private final BotUtils botUtils;
+    private final UserStateHandler userStateHandler;
 
     @Override
     public void handle(Update update) {
@@ -36,6 +39,5 @@ public class RemoveGroupCommandHandler implements CommandHandler {
         } else {
             messageService.sendMessage(chatId, "You do not have any groups to remove");
         }
-
     }
 }

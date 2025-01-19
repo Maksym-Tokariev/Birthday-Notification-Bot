@@ -1,10 +1,10 @@
 package com.ens.comands;
 
 import com.ens.models.UserData;
-import com.ens.servise.BotState;
+import com.ens.utils.BotState;
 import com.ens.servise.MessageService;
 import com.ens.servise.UserService;
-import com.ens.servise.UserStateHandler;
+import com.ens.utils.UserStateHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -37,7 +37,6 @@ public class MyDataCommandHandler implements CommandHandler {
                     "You may not have entered it.");
             log.info("The command was not executed for the user because the user is not logged in");
         }
-        userStateHandler.setState(chatId, BotState.WAITING_FOR_RESPONSE);
     }
 
 }

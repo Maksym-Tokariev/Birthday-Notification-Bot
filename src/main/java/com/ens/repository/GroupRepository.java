@@ -52,24 +52,6 @@ public class GroupRepository {
 
     }
 
-//    public Optional<List<Group>> findAll() {
-//        log.info("Method findAll called in GroupRepository");
-//
-//        String sql = "SELECT * FROM groups";
-//
-//        try {
-//            List<Group> group = jdbcTemplate.query(sql, new GroupRowMapper());
-//            return Optional.ofNullable(group);
-//        } catch (EmptyResultDataAccessException e) {
-//            log.debug("Groups not found");
-//            return Optional.empty();
-//        } catch (Exception e) {
-//            log.error("Error in finding groups: {}", e.getMessage());
-//            throw e;
-//        }
-//
-//    }
-
     public void saveUserGroup(Long chatId, Long groupId) {
         log.info("Method save called in GroupRepository with chatId: {} and groupId: {}", chatId, groupId);
 

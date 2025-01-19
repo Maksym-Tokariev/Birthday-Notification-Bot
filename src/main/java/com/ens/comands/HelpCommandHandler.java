@@ -16,7 +16,9 @@ public class HelpCommandHandler implements CommandHandler {
             + "Commands:\n\n"
             + "The command /start adds you to the notification system\n\n"
             + "The command /mydate shows your information about you\n\n"
-            + "The command /deletedata delete information about you\n\n";
+            + "The command /deletedata delete information about you\n\n"
+            + "The command /mygroups shows list of your groups\n\n"
+            + "The command /removegroup removes you from the group\n\n";
 
     @Override
     public void handle(Update update) {

@@ -52,5 +52,4 @@ public class MessageService {
             log.error("Error while sending message: {}", e.getMessage(), e);
         }
     }
-
 }

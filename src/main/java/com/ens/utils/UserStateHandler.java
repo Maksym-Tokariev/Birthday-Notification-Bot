@@ -1,4 +1,4 @@
-package com.ens.servise;
+package com.ens.utils;
 
 import com.ens.models.UserContext;
 import lombok.AllArgsConstructor;

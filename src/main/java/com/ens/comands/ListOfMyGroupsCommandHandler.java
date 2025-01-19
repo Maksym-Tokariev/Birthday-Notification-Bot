@@ -1,10 +1,10 @@
 package com.ens.comands;
 
 import com.ens.models.UserGroups;
-import com.ens.servise.BotState;
+import com.ens.utils.BotState;
 import com.ens.servise.MessageService;
 import com.ens.servise.UserService;
-import com.ens.servise.UserStateHandler;
+import com.ens.utils.UserStateHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -40,6 +40,5 @@ public class ListOfMyGroupsCommandHandler implements CommandHandler {
             messageService.sendMessage(chatId, "You are not a member of any group");
             log.info("The command executed and returned a empty list of groups");
         }
-        userStateHandler.setState(chatId, BotState.WAITING_FOR_RESPONSE);
     }
 }
