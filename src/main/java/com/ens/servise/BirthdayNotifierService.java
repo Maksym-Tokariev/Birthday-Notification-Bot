@@ -22,7 +22,7 @@ public class BirthdayNotifierService {
     private final UserGroupRepository userGroupRepository;
     private final MessageService messageService;
 
-    @Scheduled(cron = "0 07 01 * * ?")
+    @Scheduled(cron = "0 0 10 * * ?")
     public void notifyBirthdays() {
         log.info("Starting birthday notification process");
 
