@@ -1,5 +1,6 @@
-package com.ens.comands;
+package com.ens.comands.impl;
 
+import com.ens.comands.CommandHandler;
 import com.ens.models.UserContext;
 import com.ens.servise.*;
 import com.ens.utils.BotState;

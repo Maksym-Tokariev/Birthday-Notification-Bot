@@ -1,5 +1,6 @@
-package com.ens.comands;
+package com.ens.comands.impl;
 
+import com.ens.comands.CommandHandler;
 import com.ens.servise.MessageService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

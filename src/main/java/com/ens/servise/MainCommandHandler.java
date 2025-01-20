@@ -22,6 +22,7 @@ import java.util.Map;
 public class MainCommandHandler {
 
     private final UserService userService;
+    private final GroupService groupService;
     private final BotUtils utils;
     private final MessageService messageService;
     private final UserStateHandler userStateHandler;
@@ -38,14 +39,14 @@ public class MainCommandHandler {
     }
 
     private void handleQuery(Update update) {
-        String callbackQuery = update.getCallbackQuery().getData();
+        String groupName = update.getCallbackQuery().getData();
         long messageId = update.getCallbackQuery().getMessage().getMessageId();
         long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-        log.info("Received query: {}, messageId: {}, chatId: {}", callbackQuery, messageId, chatId);
+        log.info("Received query: {}, messageId: {}, chatId: {}", groupName, messageId, chatId);
 
-        userService.deleteUserGroup(callbackQuery,chatId);
-        messageService.sendMessage(chatId, "You have been successfully removed from the group " + callbackQuery +
+        groupService.deleteUserGroup(groupName,chatId);
+        messageService.sendMessage(chatId, "You have been successfully removed from the group " + groupName +
                 ". Your birthday messages will no longer be sent to this group");
     }
 

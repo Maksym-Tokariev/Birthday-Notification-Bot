@@ -1,4 +1,4 @@
-package com.ens.config;
+package com.ens.config.bot;
 
 import com.ens.servise.TelegramBot;
 import lombok.AllArgsConstructor;

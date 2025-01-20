@@ -1,6 +1,7 @@
 package com.ens.config;
 
 import com.ens.comands.*;
+import com.ens.comands.impl.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

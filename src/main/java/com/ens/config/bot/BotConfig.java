@@ -1,4 +1,4 @@
-package com.ens.config;
+package com.ens.config.bot;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

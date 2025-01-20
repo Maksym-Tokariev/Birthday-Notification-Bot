@@ -1,10 +1,10 @@
-package com.ens.comands;
+package com.ens.comands.impl;
 
+import com.ens.comands.CommandHandler;
 import com.ens.models.UserGroups;
-import com.ens.utils.BotState;
+import com.ens.servise.GroupService;
 import com.ens.servise.MessageService;
 import com.ens.servise.UserService;
-import com.ens.utils.UserStateHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,15 +18,15 @@ import java.util.List;
 public class ListOfMyGroupsCommandHandler implements CommandHandler {
 
     private final UserService userService;
+    private final GroupService groupService;
     private final MessageService messageService;
-    private final UserStateHandler userStateHandler;
 
     @Override
     public void handle(Update update) {
         log.info("The command is processed in ListOfMyGroupsCommandHandler");
 
         Long chatId = update.getMessage().getChatId();
-        List<UserGroups> listOfGroups = userService.listOfGroups(chatId);
+        List<UserGroups> listOfGroups = groupService.getUserGroups(chatId);
 
         if (!listOfGroups.isEmpty() && userService.userExists(chatId)) {
             StringBuilder groupsMessage = new StringBuilder("Groups you are a member of:\n");

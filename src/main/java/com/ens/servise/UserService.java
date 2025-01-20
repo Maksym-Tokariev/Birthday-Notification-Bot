@@ -1,11 +1,7 @@
 package com.ens.servise;
 
-import com.ens.models.Group;
 import com.ens.models.UserData;
-import com.ens.models.UserGroups;
 import com.ens.models.Users;
-import com.ens.repository.GroupRepository;
-import com.ens.repository.UserGroupRepository;
 import com.ens.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,17 +10,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Date;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class UserService {
 
+    private final GroupService groupService;
     private final UserRepository userRepository;
-    private final GroupRepository groupRepository;
-    private final UserGroupRepository groupUserRepository;
     private final MessageService messageService;
+    private final CacheService cacheService;
 
     @Transactional
     public void registerUser(Message message, Long groupId, Date dateOfBirth, String groupName) {
@@ -34,7 +31,6 @@ public class UserService {
         var chat = message.getChat();
 
         Optional<Users> optionalUsers = userRepository.findById(chatId);
-        Optional<Group> optionalGroup = groupRepository.findById(groupId);
 
         Users users = optionalUsers.orElseGet(() -> {
             Users newUser = new Users();
@@ -54,32 +50,18 @@ public class UserService {
 
         log.info("User {} with chatId: {}", users, chatId);
 
-        if (optionalGroup.isEmpty()) {
-            registerGroup(groupId, groupName);
+        if (!groupService.groupExists(groupId)) {
+            groupService.registerGroup(groupId, groupName);
             log.info("Group registered: {}", groupName);
         }
 
-        if (groupUserRepository.findUserAndGroup(chatId, groupId).isEmpty()) {
-            groupRepository.saveUserGroup(users.getChatId(), groupId);
+        if (!groupService.isUserInGroup(chatId, groupId)) {
+            groupService.addUserToGroup(users.getChatId(), groupId);
             log.info("Saved user in users_groups: {} with group: {}", users.getChatId(), groupId);
         }
 
         log.info("Method registerUser was performed in UserService with groupId: {} and chatId: {}", groupId, chatId);
-
         userWasRegistered(groupId, users);
-
-    }
-
-    @Transactional
-    public void registerGroup(Long groupId, String groupName) {
-        log.info("Method registerGroup called in UserService with groupId: {}", groupId);
-        Group newGroup = new Group();
-
-        newGroup.setGroupId(groupId);
-        newGroup.setGroupName(groupName);
-
-        groupRepository.save(newGroup);
-        log.info("Group has been registered: {}", newGroup);
     }
 
     public boolean userExists(Long chatId) {
@@ -93,7 +75,7 @@ public class UserService {
     }
 
     public void deleteUser(Long chatId) {
-        groupUserRepository.deleteUserAndGroup(chatId);
+        groupService.removeUserFromAllGroups(chatId);
         userRepository.deleteUser(chatId);
     }
 
@@ -111,26 +93,18 @@ public class UserService {
         });
     }
 
-    public List<UserGroups> listOfGroups(Long chatId) {
-        log.info("Method listOfGroups called in UserService with chatId: {}", chatId);
+    public Optional<UserData> getCachedDateOfBirth(Long chatId) {
+        log.info("Method getCachedDateOfBirth called in UserService with chatId: {}", chatId);
 
-        List<UserGroups> groupsList = groupUserRepository.findGroupByChatId(chatId);
-
-        if (groupsList.isEmpty()) {
-            log.info("No groups found for chatId: {}", chatId);
-        } else {
-            log.info("Found {} groups", groupsList.size());
-        }
-
-        return groupsList;
+        return cacheService.getCachedUserData(chatId).or(() -> {
+            var data = getDateOfBirth(chatId);
+            data.ifPresent(userData -> cacheService.cacheUserData(chatId, userData));
+            return data;
+        });
     }
 
     private void userWasRegistered(Long groupId, Users users) {
         String groupMessage = "@" + users.getUserName() + " has registered their birthday for this group.";
         messageService.sendMessage(groupId, groupMessage);
-    }
-
-    public void deleteUserGroup(String groupName, Long chatId) {
-        groupUserRepository.deleteGroup(groupName, chatId);
     }
 }

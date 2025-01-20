@@ -1,6 +1,6 @@
 package com.ens.servise;
 
-import com.ens.config.BotConfig;
+import com.ens.config.bot.BotConfig;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

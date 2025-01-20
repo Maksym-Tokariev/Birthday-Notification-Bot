@@ -1,11 +1,11 @@
-package com.ens.comands;
+package com.ens.comands.impl;
 
+import com.ens.comands.CommandHandler;
 import com.ens.models.UserGroups;
-import com.ens.utils.BotState;
+import com.ens.servise.GroupService;
 import com.ens.utils.BotUtils;
 import com.ens.servise.MessageService;
 import com.ens.servise.UserService;
-import com.ens.utils.UserStateHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,16 +20,16 @@ import java.util.List;
 public class RemoveGroupCommandHandler implements CommandHandler {
 
     private final UserService userService;
+    private final GroupService groupService;
     private final MessageService messageService;
     private final BotUtils botUtils;
-    private final UserStateHandler userStateHandler;
 
     @Override
     public void handle(Update update) {
         log.info("The command is processed in RemoveGroupCommandHandler");
         Long chatId = update.getMessage().getChatId();
 
-        List<UserGroups> groupsList = userService.listOfGroups(chatId);
+        List<UserGroups> groupsList = groupService.getUserGroups(chatId);
 
         if (!groupsList.isEmpty() && userService.userExists(chatId)) {
             InlineKeyboardMarkup groups = botUtils.createKeyboardCommand(groupsList);

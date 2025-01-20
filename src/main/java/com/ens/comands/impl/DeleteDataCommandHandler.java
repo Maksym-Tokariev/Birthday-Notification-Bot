@@ -1,9 +1,8 @@
-package com.ens.comands;
+package com.ens.comands.impl;
 
-import com.ens.utils.BotState;
+import com.ens.comands.CommandHandler;
 import com.ens.servise.MessageService;
 import com.ens.servise.UserService;
-import com.ens.utils.UserStateHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,6 @@ public class DeleteDataCommandHandler implements CommandHandler {
 
     private final UserService userService;
     private final MessageService messageService;
-    private final UserStateHandler userStateHandler;
 
     @Override
     public void handle(Update update) {
