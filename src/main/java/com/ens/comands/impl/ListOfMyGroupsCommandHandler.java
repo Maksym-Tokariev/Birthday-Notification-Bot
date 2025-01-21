@@ -26,7 +26,7 @@ public class ListOfMyGroupsCommandHandler implements CommandHandler {
         log.info("The command is processed in ListOfMyGroupsCommandHandler");
 
         Long chatId = update.getMessage().getChatId();
-        List<UserGroups> listOfGroups = groupService.getUserGroups(chatId);
+        List<UserGroups> listOfGroups = groupService.getCachedUserGroups(chatId);
 
         if (!listOfGroups.isEmpty() && userService.userExists(chatId)) {
             StringBuilder groupsMessage = new StringBuilder("Groups you are a member of:\n");

@@ -113,9 +113,10 @@ public class UserGroupRepository {
             String userName = rs.getString("user_name");
             String groupName = rs.getString("group_name");
             Long groupId = rs.getLong("group_id");
-            System.out.println("Fetched user_name: " + userName + ", group_name: " + groupName);
+
+            log.info("Fetched user_name: {} group_name: {}", userName, groupName);
             if (userName == null || groupName == null) {
-                System.out.println("Warning: Null value found in ResultSet.");
+                log.debug("Warning: Null value found in ResultSet.");
             }
             return new UserGroups(userName, groupName, groupId);
         }

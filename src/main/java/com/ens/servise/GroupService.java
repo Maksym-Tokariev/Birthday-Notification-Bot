@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -44,6 +45,18 @@ public class GroupService {
         }
 
         return groupsList;
+    }
+
+    public List<UserGroups> getCachedUserGroups(Long chatId) {
+        var groupsCache = cacheService.getCachedGroups(chatId);
+        if (groupsCache.isEmpty()) {
+            var groups = getUserGroups(chatId);
+            if (!groups.isEmpty()) {
+                cacheService.cacheUserGroups(chatId, groups);
+            }
+            return groups;
+        }
+        return groupsCache;
     }
 
     public boolean groupExists(Long groupId) {
