@@ -34,7 +34,7 @@ public class BotUtils {
             Date birthday = sdf.parse(date);
             return birthday;
         } catch (ParseException e) {
-            log.error("Error while parsing date: {}", e.getMessage(), e);
+            log.warn("Error while parsing date: {}", e.getMessage(), e);
         }
         return null;
     }

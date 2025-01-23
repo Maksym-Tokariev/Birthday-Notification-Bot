@@ -35,7 +35,7 @@ public class RemoveGroupCommandHandler implements CommandHandler {
             InlineKeyboardMarkup groups = botUtils.createKeyboardCommand(groupsList);
             messageService.sendMessage(chatId, "Select the group you want to remove", groups);
 
-            log.info("The command executed and deleted group");
+            log.info("The command /removegroup executed");
         } else {
             messageService.sendMessage(chatId, "You do not have any groups to remove");
         }

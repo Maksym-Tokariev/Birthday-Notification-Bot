@@ -1,12 +1,14 @@
 package com.ens.servise;
 
 import com.ens.comands.CommandHandler;
+import com.ens.config.rabbitmq.RabbitMQConfig;
 import com.ens.models.UserContext;
 import com.ens.utils.BotState;
 import com.ens.utils.BotUtils;
 import com.ens.utils.UserStateHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.ChatMemberUpdated;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -22,32 +24,20 @@ import java.util.Map;
 public class MainCommandHandler {
 
     private final UserService userService;
-    private final GroupService groupService;
     private final BotUtils utils;
     private final MessageService messageService;
     private final UserStateHandler userStateHandler;
+    private final AmqpTemplate amqpTemplate;
     private final Map<String, CommandHandler> commandHandlers;
 
     public void handleUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            handleTextMessage(update);
+            amqpTemplate.convertAndSend(RabbitMQConfig.COMMAND_QUEUE, update);
         } else if (update.hasMyChatMember()) {
             handleChatMessageUpdate(update);
         } else if (update.hasCallbackQuery()) {
-            handleQuery(update);
+            amqpTemplate.convertAndSend(RabbitMQConfig.QUERY_QUEUE, update);
         }
-    }
-
-    private void handleQuery(Update update) {
-        String groupName = update.getCallbackQuery().getData();
-        long messageId = update.getCallbackQuery().getMessage().getMessageId();
-        long chatId = update.getCallbackQuery().getMessage().getChatId();
-
-        log.info("Received query: {}, messageId: {}, chatId: {}", groupName, messageId, chatId);
-
-        groupService.deleteUserGroup(groupName,chatId);
-        messageService.sendMessage(chatId, "You have been successfully removed from the group " + groupName +
-                ". Your birthday messages will no longer be sent to this group");
     }
 
     private void handleChatMessageUpdate(Update update) {
@@ -66,42 +56,28 @@ public class MainCommandHandler {
         }
     }
 
-    private void handleTextMessage(Update update) {
-        String message = update.getMessage().getText();
-        Long chatId = update.getMessage().getChatId();
-
-        BotState state = userStateHandler.getState(chatId);
-
-        log.info("Method handleTextMessage, state: {}, message: {}", state, message);
-        CommandHandler handler = commandHandlers.get(message);
-
-            if (handler != null) {
-            handler.handle(update);
-        } else {
-            switch (state) {
-
+    public void handleCommand(long chatId, String command, BotState state, Update update) {
+        switch (state) {
                 case WAITING_FOR_RESPONSE:
-                    log.info("handleTextMessage, waiting for response {}, {}", message, state);
-                    handleWaitingForResponse(chatId, message, update);
+                    log.info("handleTextMessage, waiting for response {}, {}", command, state);
+                    handleWaitingForResponse(chatId, command, update);
                     break;
 
                 case GET_YEAR:
-                    yearCommandReceived(chatId, message);
+                    yearCommandReceived(chatId, command);
                     break;
 
                 case GET_MONTH:
-                    monthCommandReceived(chatId, message);
+                    monthCommandReceived(chatId, command);
                     break;
 
                 case GET_DAY:
-                    dayCommandReceived(chatId, message, update);
+                    dayCommandReceived(chatId, command, update);
                     break;
 
                 default:
                     log.error("Unknown state: {}", state);
             }
-        }
-
     }
 
     private void handleWaitingForResponse(Long chatId, String message, Update update) {
@@ -203,4 +179,6 @@ public class MainCommandHandler {
 
         userService.registerUser(update.getMessage(), groupId, dateOfBirth, groupName);
     }
+
+
 }
