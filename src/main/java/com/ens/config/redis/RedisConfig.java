@@ -17,6 +17,6 @@ public class RedisConfig {
 
         poolConfig.setJmxEnabled(false);
 
-        return new JedisPool(poolConfig, "localhost", 6379);
+        return new JedisPool(poolConfig, "localhost", 6379,3600);
     }
 }

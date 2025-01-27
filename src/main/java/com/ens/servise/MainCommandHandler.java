@@ -126,7 +126,7 @@ public class MainCommandHandler {
             log.info("Received year: {}", message);
         } else {
             messageService.sendMessage(chatId, "The year is incorrect, please try again");
-            log.info("Received incorrect year {}", message);
+            log.info("Received incorrect year {}, must have a value between 1900 and today", message);
         }
     }
 
@@ -137,13 +137,13 @@ public class MainCommandHandler {
 
             UserContext context = userStateHandler.getContext(chatId);
             context.getDate()[1] = utils.monthToNum(message);
-            userStateHandler.setContext(chatId, context);
-
-            log.info("Received month {}", message);
+            if (!context.getDate()[1].equals(" ") || context.getDate()[0] != null) {
+                userStateHandler.setContext(chatId, context);
+                log.info("Received month {}", message);
+            }
         } else {
             messageService.sendMessage(chatId, "The month is incorrect, please try again");
-
-            log.info("Received incorrect month {}", message);
+            log.info("The month format is incorrect: {}, must have the full name, like: e.g: 'December'", message);
         }
     }
 

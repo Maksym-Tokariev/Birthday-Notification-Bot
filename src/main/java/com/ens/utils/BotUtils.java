@@ -23,7 +23,7 @@ public class BotUtils {
     public Date stringToDate(String date) {
 
         if (date == null || date.isEmpty()) {
-            log.error("Provided date string is null or empty");
+            log.warn("Provided date string is null or empty: {}", date);
             return null;
         }
 
@@ -42,19 +42,25 @@ public class BotUtils {
     public boolean checkYearMessage(String message) {
         try {
             if (message == null || message.isEmpty()) {
-                log.debug("Provided message is null or empty");
+                log.warn("Provided year message is null or empty: {} " +
+                        "the year value must be between 1900 and today.", message);
             }
             int year = Integer.parseInt(message);
             int currYear = LocalDate.now().getYear();
 
             return (year >= 1900 && year <= currYear);
         } catch (NumberFormatException e) {
-            log.error("Invalid year format: {}", message);
+            log.warn("Invalid year format: {}", message, e);
             return false;
         }
     }
 
     public boolean checkMonthMessage(String message) {
+        if (message == null || message.isEmpty()) {
+            log.warn("Provided month message is null or empty: {}, " +
+                    "month value must correspond to the name of the month in the format: “January” ", message);
+            return false;
+        }
         String[] months = {"January", "February", "March", "April", "May", "June", "July",
                 "August", "September", "October", "November", "December"};
         for (String month : months) {
@@ -66,6 +72,11 @@ public class BotUtils {
     }
 
     public boolean checkDayMessage(String message) {
+        if (message == null || message.isEmpty()) {
+            log.warn("Provided day message is null or empty: {}, " +
+                    "the day value must be between 1 and 31 ", message);
+            return false;
+        }
         int day = Integer.parseInt(message);
         for (int i = 0; i < message.length(); i++) {
             if (day >= 1 && day <= 31) {
@@ -76,6 +87,10 @@ public class BotUtils {
     }
 
     public String monthToNum(String month) {
+        if (month == " " || month == null) {
+            return "Invalid month";
+        }
+
         Map<String, String> map = new HashMap<>();
         map.put("January", "01");
         map.put("February", "02");
@@ -96,7 +111,7 @@ public class BotUtils {
                 return month;
             }
         }
-        return month;
+        return null;
     }
 
     public ReplyKeyboardMarkup createKeyboardMonth() {
