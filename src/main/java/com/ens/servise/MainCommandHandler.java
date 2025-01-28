@@ -1,6 +1,7 @@
 package com.ens.servise;
 
 import com.ens.comands.CommandHandler;
+import com.ens.comands.impl.ChatMessageUpdateHandler;
 import com.ens.config.rabbitmq.RabbitMQConfig;
 import com.ens.models.UserContext;
 import com.ens.utils.BotState;
@@ -10,11 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.ChatMemberUpdated;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 
@@ -27,6 +25,7 @@ public class MainCommandHandler {
     private final BotUtils utils;
     private final MessageService messageService;
     private final UserStateHandler userStateHandler;
+    private final ChatMessageUpdateHandler chatMessageUpdateHandler;
     private final AmqpTemplate amqpTemplate;
     private final Map<String, CommandHandler> commandHandlers;
 
@@ -34,25 +33,9 @@ public class MainCommandHandler {
         if (update.hasMessage() && update.getMessage().hasText()) {
             amqpTemplate.convertAndSend(RabbitMQConfig.COMMAND_QUEUE, update);
         } else if (update.hasMyChatMember()) {
-            handleChatMessageUpdate(update);
+            chatMessageUpdateHandler.handleChatMessageUpdate(update);
         } else if (update.hasCallbackQuery()) {
             amqpTemplate.convertAndSend(RabbitMQConfig.QUERY_QUEUE, update);
-        }
-    }
-
-    private void handleChatMessageUpdate(Update update) {
-        ChatMemberUpdated myChatMember = update.getMyChatMember();
-        if (myChatMember.getNewChatMember().getStatus().equals("member")) {
-            Long groupId = myChatMember.getChat().getId();
-            String groupName = myChatMember.getChat().getTitle();
-
-            String encodedGroupId = URLEncoder.encode("groupId_" + groupId, StandardCharsets.UTF_8);
-            String encodedGroupName = URLEncoder.encode("groupName_" + groupName, StandardCharsets.UTF_8);
-            String answer = "Hi, I'll create a birthday calendar for this group and remind you to congratulate the birthday people. " +
-                    "Please visit the bot privately to register: https://t.me/ENSystembot?start=" + encodedGroupId + "_" + encodedGroupName;
-
-            messageService.sendMessage(groupId, answer);
-            log.info("The bot has been added to the group");
         }
     }
 
@@ -114,7 +97,7 @@ public class MainCommandHandler {
         }
     }
 
-    private void yearCommandReceived(Long chatId, String message) {
+    public void yearCommandReceived(Long chatId, String message) {
         if (utils.checkYearMessage(message)) {
             messageService.sendMessage(chatId, "Good, now enter the month", utils.createKeyboardMonth());
             userStateHandler.setState(chatId, BotState.GET_MONTH);
@@ -130,7 +113,7 @@ public class MainCommandHandler {
         }
     }
 
-    private void monthCommandReceived(Long chatId, String message) {
+    public void monthCommandReceived(Long chatId, String message) {
         if (utils.checkMonthMessage(message)) {
             messageService.sendMessage(chatId, "Good, and lastly, enter the day");
             userStateHandler.setState(chatId, BotState.GET_DAY);
@@ -147,7 +130,7 @@ public class MainCommandHandler {
         }
     }
 
-    private void dayCommandReceived(Long chatId, String message, Update update) {
+    public void dayCommandReceived(Long chatId, String message, Update update) {
         if (utils.checkDayMessage(message)) {
             messageService.sendMessage(chatId, "Thank you! The process is completed.");
             userStateHandler.setState(chatId, BotState.WAITING_FOR_RESPONSE);
@@ -162,12 +145,11 @@ public class MainCommandHandler {
 
         } else {
             messageService.sendMessage(chatId, "The day is incorrect, try again");
-
-            log.info("Received incorrect day {}", message);
+            log.info("Received incorrect day {}, the day must be between 1 and 31", message);
         }
     }
 
-    private void registration(Update update) {
+    public void registration(Update update) {
         UserContext context = userStateHandler.getContext(update.getMessage().getChatId());
         Long groupId = context.getGroupId();
 

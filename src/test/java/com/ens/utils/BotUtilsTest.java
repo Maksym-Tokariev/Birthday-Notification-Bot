@@ -7,7 +7,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class BotUtilsTest {
     }
 
     @Test
-    void stringToDateTest() {
+    void testStringToDate() {
         Date date1 = botUtils.stringToDate("2016-11-15");
         Assertions.assertNotNull(date1);
         Assertions.assertEquals(116, date1.getYear());
@@ -45,7 +44,7 @@ public class BotUtilsTest {
     }
 
     @Test
-    void checkYearTest() {
+    void testCheckYear() {
         boolean case1 = botUtils.checkYearMessage("2016");
         Assertions.assertTrue(case1);
 
@@ -72,7 +71,7 @@ public class BotUtilsTest {
     }
 
     @Test
-    void checkMonthTest() {
+    void testCheckMonth() {
         boolean case1 = botUtils.checkMonthMessage("Jen");
         Assertions.assertFalse(case1);
 
@@ -93,7 +92,7 @@ public class BotUtilsTest {
     }
 
     @Test
-    void checkDateTest() {
+    void testCheckDate() {
         boolean case1 = botUtils.checkDayMessage("31");
         Assertions.assertTrue(case1);
         boolean case2 = botUtils.checkDayMessage("1");
@@ -109,7 +108,7 @@ public class BotUtilsTest {
     }
 
     @Test
-    void monthToNumTest() {
+    void testMonthToNum() {
         String case1 = botUtils.monthToNum("January");
         Assertions.assertEquals("01", case1);
         String case2 = botUtils.monthToNum("February");
@@ -119,11 +118,11 @@ public class BotUtilsTest {
         String case4 = botUtils.monthToNum(" ");
         Assertions.assertEquals("Invalid month", case4);
         String case5 = botUtils.monthToNum(null);
-        Assertions.assertEquals("Invalid month", case4);
+        Assertions.assertEquals("Invalid month", case5);
     }
 
     @Test
-    void createKeyboardMonthTest() {
+    void testCreateKeyboardMonth() {
         ReplyKeyboardMarkup keyboardMarkup = botUtils.createKeyboardMonth();
 
         List<KeyboardRow> rows = keyboardMarkup.getKeyboard();
